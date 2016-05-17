@@ -11,6 +11,7 @@
 # for model (3) in manuscript.
 
 library(ggplot2)
+library(MASS)
   
 N<- 260  # 260 participants
 tp<- 4 # number of maximum timepoints observed for each person
