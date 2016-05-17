@@ -1,0 +1,35 @@
+########################
+# Model file for manuscript 
+# 'Comparisons of neurodegeneration over time between healthy ageing and Alzheimer's 
+# disease cohorts'
+# This is run by Manuscript_code_VENTRICLE.r and Manuscript_code_HIPPO.r
+
+model{
+  for(i in 1:N){ # for N people
+    beta[i, 1:4] ~ dmnorm(mu.beta[], tau[1:4,1:4])
+  }
+  
+  for(p in 1:obs){    
+    
+    mu[p]<- beta[person[p], 1] + beta[person[p], 2]*age[p] +  beta2*x1[p] +beta3*x2[p] +
+            beta[person[p], 3]*Age_MCI[p] + beta[person[p], 4]*Age_AD[p]
+    
+    Y[p]~dnorm(mu[p], tau.c)
+    predY[p]~dnorm(mu[p], tau.c)
+  }
+
+  tau.c ~ dgamma(0.0001, 0.0001) 
+  sigma2 <- 1/tau.c     
+    
+  mu.beta[1:4] ~ dmnorm(mean[], prec[ , ]) # monitor
+  tau[1:4, 1:4] ~ dwish(R[1:4,1:4], 6) # dwish(MatrixV, k) where k = degrees of freedom -> no.param + 2
+
+# in hippo model:
+# changed tau.c~ dgamma(0.001, 0.001) 17/04/2015
+
+  # Covariance matrix for beta's
+  omega[1:4, 1:4]<- inverse(tau[1:4, 1:4]) # monitor
+
+  beta2~dnorm(0, 0.001)  # these are fixed effect, categorical var
+  beta3~dnorm(0, 0.001) 
+}
